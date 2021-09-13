@@ -1,7 +1,7 @@
 package config
 
 var (
-	GitToken = "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"
+	GitToken = "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"
 	ConnStr  = "user=postgres password=Qweasdzxc1 dbname=users sslmode=disable"
 )
 
