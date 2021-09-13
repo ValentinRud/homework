@@ -9,14 +9,31 @@ import (
 	_ "github.com/lib/pq"
 )
 
-func CreateUser(u *models.AddUser) {
+//type Repository interface {
+//	CreateUser()
+//	ListUser()
+//}
+
+type DataBase struct {
+	db *sql.DB
+}
+
+func (d *DataBase) Open() error {
 	db, err := sql.Open("postgres", config.ConnStr)
 	if err != nil {
-		fmt.Println(err)
+		return err
 	}
-	defer db.Close()
+	if err := db.Ping(); err != nil {
+		return err
+	}
+	d.db = db
 
-	result, err := db.Query("insert into test (id, first_name, last_name, age, status) values ($1,$2,$3,$4,$5)", u.Id, u.FirstName, u.LastName, u.Age, u.Status)
+	return err
+}
+
+func CreateUser(u *models.AddUser, d DataBase) {
+	d.Open()
+	result, err := d.db.Query("insert into test (id, first_name, last_name, age, status) values ($1,$2,$3,$4,$5)", u.Id, u.FirstName, u.LastName, u.Age, u.Status)
 	if err != nil {
 		panic(err)
 	}
@@ -26,14 +43,9 @@ func CreateUser(u *models.AddUser) {
 
 var s models.SeeUser
 
-func SelectDb() (int, string) {
-	db, err := sql.Open("postgres", config.ConnStr)
-	if err != nil {
-		fmt.Println(err)
-	}
-	defer db.Close()
-
-	rows, err := db.Query("SELECT id, last_name FROM test ORDER BY id ASC")
+func ListUser(d *DataBase) (int, string) {
+	d.Open()
+	rows, err := d.db.Query("SELECT id, last_name FROM test ORDER BY id ASC")
 	if err != nil {
 		panic(err)
 	}

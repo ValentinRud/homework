@@ -10,6 +10,6 @@ import (
 func main() {
 	gateways.GetJson()
 	fmt.Println(services.New(gateways.M.Id, gateways.M.LastName, gateways.M.FirstName, gateways.M.Age, gateways.M.Status))
-	repositories.CreateUser(gateways.M)
-	repositories.SelectDb()
+	repositories.CreateUser(gateways.M, repositories.DataBase{})
+	repositories.ListUser(&repositories.DataBase{})
 }
