@@ -5,6 +5,13 @@ var (
 	ConnStr  = "user=postgres password=Qweasdzxc1 dbname=users sslmode=disable"
 )
 
+type Config struct {
+	User     string
+	Password string
+	Dbname   string
+	Sslmode  string
+}
+
 // 1
 // Сделать структуру репозитория с двумя методами
 // Create (insert) func .. Create(..) error

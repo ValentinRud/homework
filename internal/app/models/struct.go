@@ -1,5 +1,9 @@
 package models
 
+import (
+	"database/sql"
+)
+
 type AddUser struct {
 	Id        int    `json:"id"`
 	FirstName string `json:"firstName"`
@@ -8,7 +12,11 @@ type AddUser struct {
 	Status    string `json:"status"`
 }
 
-type SeeUser struct {
+type ListUser struct {
 	Id       int    `json:"id"`
 	LastName string `json:"lastName"`
+}
+
+type DataBase struct {
+	db *sql.DB
 }

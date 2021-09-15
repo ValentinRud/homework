@@ -2,14 +2,27 @@ package main
 
 import (
 	"fmt"
+	"homework/config"
 	"homework/internal/app/gateways"
 	"homework/internal/app/repositories"
-	"homework/internal/app/services"
+	"log"
+
+	_ "github.com/lib/pq"
 )
 
 func main() {
-	gateways.GetJson()
-	fmt.Println(services.New(gateways.M.Id, gateways.M.LastName, gateways.M.FirstName, gateways.M.Age, gateways.M.Status))
-	repositories.CreateUser(gateways.M, repositories.DataBase{})
-	repositories.ListUser(&repositories.DataBase{})
+	db, err := repositories.NewPostgresDb(config.Config{
+		User:     "postgres",
+		Password: "Qweasdzxc1",
+		Dbname:   "users",
+		Sslmode:  "disable",
+	})
+	if err != nil {
+		log.Fatalf("ERROR %s", err)
+	}
+
+	repos := repositories.NewRepository(db)
+	fmt.Println(repos)
+	repositories.CreateUser(gateways.M, db)
+	repositories.ListUser(repositories.NewDataBase(db))
 }
