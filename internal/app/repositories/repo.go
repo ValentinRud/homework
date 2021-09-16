@@ -31,32 +31,8 @@ func NewListUser(Id int, Last_name string) *models.ListUser {
 	}
 }
 
-type DataBase struct {
-	db *sql.DB
-}
-
-func NewDataBase(db *sql.DB) *DataBase {
-	return &DataBase{
-		db: db,
-	}
-}
-
-type AddUser interface {
-}
-
-type SeeUser interface {
-}
-type Repository struct {
-	AddUser
-	SeeUser
-}
-
-func NewRepository(db *sql.DB) *Repository {
-	return &Repository{}
-}
-
-func NewPostgresDb(cfg config.Config) (*sql.DB, error) {
-	db, err := sql.Open("postgres", fmt.Sprintf("user=%s password=%s dbname=%s sslmode=%s", cfg.User, cfg.Password, cfg.Dbname, cfg.Sslmode))
+func NewPostgresDb() (*sql.DB, error) {
+	db, err := sql.Open("postgres", config.ConnStr)
 	if err != nil {
 		return nil, err
 	}
@@ -67,34 +43,31 @@ func NewPostgresDb(cfg config.Config) (*sql.DB, error) {
 	return db, err
 }
 
-func CreateUser(u *models.AddUser, d *sql.DB) {
-	result, err := d.Query("insert into test (id, first_name, last_name, age, status) values ($1,$2,$3,$4,$5)", u.Id, u.FirstName, u.LastName, u.Age, u.Status)
+func CreateUser(a *models.AddUser, s *sql.DB) {
+	result, err := s.Query("insert into test (id, first_name, last_name, age, status) values ($1,$2,$3,$4,$5)", a.Id, a.FirstName, a.LastName, a.Age, a.Status)
 	if err != nil {
 		panic(err)
 	}
 	defer result.Close()
-
 }
 
-var s models.ListUser
-
-func ListUser(d *DataBase) (int, string) {
-	rows, err := d.db.Query("SELECT id, last_name FROM test ORDER BY id ASC")
+func ListUser(l *models.ListUser, s *sql.DB) (int, string) {
+	rows, err := s.Query("SELECT id, last_name FROM test ORDER BY id ASC")
 	if err != nil {
 		panic(err)
 	}
 	sendUsers := []models.ListUser{}
 	for rows.Next() {
-		err := rows.Scan(&s.Id, &s.LastName)
+		err := rows.Scan(&l.Id, &l.LastName)
 		if err != nil {
 			fmt.Println(err)
 			continue
 		}
-		sendUsers = append(sendUsers, s)
+		sendUsers = append(sendUsers, *l)
 	}
 
-	for _, s := range sendUsers {
-		fmt.Println(s.Id, s.LastName)
+	for _, l := range sendUsers {
+		fmt.Println(l.Id, l.LastName)
 	}
-	return s.Id, s.LastName
+	return l.Id, l.LastName
 }
