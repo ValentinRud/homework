@@ -5,6 +5,7 @@ import (
 	"homework/internal/app/gateways"
 	"homework/internal/app/models"
 	"homework/internal/app/repositories"
+	"homework/internal/app/services"
 	"log"
 
 	_ "github.com/lib/pq"
@@ -20,5 +21,6 @@ func main() {
 	AddUser := repositories.NewAddUser(gateways.GetJson(&models.AddUser{}))
 	repositories.CreateUser(AddUser, db)
 	repositories.NewListUser(repositories.ListUser(&models.ListUser{}, db))
+	fmt.Println(services.New(gateways.GetJson(&models.AddUser{})))
 
 }
