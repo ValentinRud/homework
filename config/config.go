@@ -1,16 +1,10 @@
 package config
 
 var (
-	GitToken = "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"
-	ConnStr  = "user=postgres password=Qweasdzxc1 dbname=users sslmode=disable"
+	GitToken  = "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"
+	ConnStr   = "user=postgres password=Qweasdzxc1 dbname=users sslmode=disable"
+	TeleToken = "1917518540:AAEWlNTy9ayLSem__ur1VZZWb2eWXuwjaWI"
 )
-
-type Config struct {
-	User     string
-	Password string
-	Dbname   string
-	Sslmode  string
-}
 
 // 1
 // Сделать структуру репозитория с двумя методами

@@ -6,6 +6,7 @@ import (
 	"homework/internal/app/models"
 	"homework/internal/app/repositories"
 	"homework/internal/app/services"
+	"homework/internal/app/telegram"
 	"log"
 
 	_ "github.com/lib/pq"
@@ -20,7 +21,8 @@ func main() {
 
 	AddUser := repositories.NewAddUser(gateways.GetJson(&models.AddUser{}))
 	repositories.CreateUser(AddUser, db)
-	repositories.NewListUser(repositories.ListUser(&models.ListUser{}, db))
+	ListUser := repositories.NewListUser(repositories.ListUser(&models.ListUser{}, db))
+	fmt.Println(ListUser)
 	fmt.Println(services.New(gateways.GetJson(&models.AddUser{})))
-
+	telegram.Telegram()
 }
