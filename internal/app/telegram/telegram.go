@@ -36,9 +36,10 @@ func Telegram() *models.AddUser {
 		msg.ReplyToMessageID = update.Message.MessageID
 
 		bot.Send(msg)
+		var u models.User
 
 		in := []byte(update.Message.Text)
-		err := json.Unmarshal(in, &models.AddUser)
+		err := json.Unmarshal(in, &u)
 		if err != nil {
 			fmt.Println(err)
 		}

@@ -1,7 +1,9 @@
 package main
 
 import (
+	"database/sql"
 	"fmt"
+	"homework/config"
 	"homework/internal/app/gateways"
 	"homework/internal/app/models"
 	"homework/internal/app/repositories"
@@ -13,10 +15,22 @@ import (
 )
 
 func main() {
-	db, err := repositories.NewPostgresDb()
+	db, err := initDb()
 	fmt.Println("connect postgre")
 	if err != nil {
 		log.Fatalf("ERROR %s", err)
+	}
+
+	var u models.User
+
+	u.SetName("name", "surname")
+	firstName := u.GetFirstName()
+	// чтение из json
+
+	userRepo := repositories.NewUserRepository(db)
+	err = userRepo.CreateUser(u)
+	if err != nil {
+		log.Fatalf("ERROR CREATING USER %s", err)
 	}
 
 	AddUser := repositories.NewAddUser(gateways.GetJson(&models.AddUser{}))
@@ -25,4 +39,17 @@ func main() {
 	fmt.Println(ListUser)
 	fmt.Println(services.New(gateways.GetJson(&models.AddUser{})))
 	telegram.Telegram()
+}
+
+func initDb() (*sql.DB, error) {
+	db, err := sql.Open("postgres", config.ConnStr)
+	if err != nil {
+		return nil, err
+	}
+	err = db.Ping()
+	if err != nil {
+		return nil, err
+	}
+
+	return db, err
 }

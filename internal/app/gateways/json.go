@@ -8,7 +8,9 @@ import (
 	"os"
 )
 
-func GetJson(a *models.AddUser) (int, string, string, int, string) {
+func GetJson() models.User {
+	var a models.User
+
 	file, err := os.Open("data1.json")
 	if err != nil {
 		fmt.Println(err)
@@ -23,5 +25,6 @@ func GetJson(a *models.AddUser) (int, string, string, int, string) {
 	if err != nil {
 		fmt.Println(err)
 	}
-	return a.Id, a.FirstName, a.LastName, a.Age, a.Status
+
+	return a
 }
