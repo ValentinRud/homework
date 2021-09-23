@@ -1,16 +1,13 @@
 package telegram
 
 import (
-	"encoding/json"
-	"fmt"
 	"homework/config"
-	"homework/internal/app/models"
 	"log"
 
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api"
 )
 
-func Telegram() *models.AddUser {
+func Telegram() {
 	bot, err := tgbotapi.NewBotAPI(config.TeleToken)
 	if err != nil {
 		log.Panic(err)
@@ -37,10 +34,5 @@ func Telegram() *models.AddUser {
 
 		bot.Send(msg)
 
-		in := []byte(update.Message.Text)
-		err := json.Unmarshal(in, &models.AddUser)
-		if err != nil {
-			fmt.Println(err)
-		}
 	}
 }
