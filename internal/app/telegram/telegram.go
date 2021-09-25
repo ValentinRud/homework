@@ -1,47 +1,69 @@
 package telegram
 
 import (
-	"encoding/json"
-	"fmt"
-	"homework/config"
-	"homework/internal/app/models"
+	"homework/internal/app/repositories"
 	"log"
 
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api"
 )
 
-func Telegram() *models.AddUser {
-	bot, err := tgbotapi.NewBotAPI(config.TeleToken)
+type Bot struct {
+	bot          *tgbotapi.BotAPI
+	repositories *repositories.UserRepository
+}
+
+func NewBot(bot *tgbotapi.BotAPI, repositories *repositories.UserRepository) *Bot {
+	return &Bot{bot: bot, repositories: repositories}
+}
+
+func (b *Bot) Start() error {
+	log.Printf("Authorized on account %s", b.bot.Self.UserName)
+
+	updates, err := b.initUpdatesChannel()
 	if err != nil {
-		log.Panic(err)
+		log.Fatalf("ERROR %s", err)
 	}
+	b.handleUpdates(updates)
 
-	bot.Debug = true
+	return nil
+}
 
-	log.Printf("Authorized on account %s", bot.Self.UserName)
-
-	u := tgbotapi.NewUpdate(0)
-	u.Timeout = 60
-
-	updates, _ := bot.GetUpdatesChan(u)
-
+func (b *Bot) handleUpdates(updates tgbotapi.UpdatesChannel) {
 	for update := range updates {
-		if update.Message == nil { // ignore any non-Message Updates
+		if update.Message == nil {
+			continue
+		}
+		if update.Message.IsCommand() {
+			b.handleCommand(update.Message)
 			continue
 		}
 
-		log.Printf("[%s] %s", update.Message.From.UserName, update.Message.Text)
-
-		msg := tgbotapi.NewMessage(update.Message.Chat.ID, update.Message.Text)
-		msg.ReplyToMessageID = update.Message.MessageID
-
-		bot.Send(msg)
-		var u models.User
-
-		in := []byte(update.Message.Text)
-		err := json.Unmarshal(in, &u)
-		if err != nil {
-			fmt.Println(err)
-		}
+		b.handleMessage(update.Message)
 	}
 }
+
+func (b *Bot) initUpdatesChannel() (tgbotapi.UpdatesChannel, error) {
+	u := tgbotapi.NewUpdate(0)
+	u.Timeout = 60
+
+	return b.bot.GetUpdatesChan(u)
+}
+
+// func Telegram() {
+// 	bot, err := tgbotapi.NewBotAPI(config.TeleToken)
+// 	if err != nil {
+// 		log.Panic(err)
+// 	}
+
+// 	bot.Debug = true
+
+// 	}
+// }
+
+// func ListText(a *tgbotapi.Message) string {
+// 	Text, err := tgbotapi.Message.Text
+// 	if err != nil {
+// 		panic(err)
+// 	}
+// 	return Text
+// }
