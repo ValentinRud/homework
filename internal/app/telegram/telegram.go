@@ -1,4 +1,5 @@
 package telegram
+<<<<<<< task2
 
 import (
 	"homework/internal/app/repositories"
