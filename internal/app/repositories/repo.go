@@ -3,7 +3,6 @@ package repositories
 import (
 	"database/sql"
 	"fmt"
-	"homework/config"
 	"homework/internal/app/models"
 
 	_ "github.com/lib/pq"
@@ -14,7 +13,17 @@ import (
 //	ListUser()
 //}
 
-func NewAddUser(Id int, First_name string, Last_name string, Age int, Status string) *models.AddUser {
+type UserRepository struct {
+	db *sql.DB
+}
+
+func NewUserRepository(db *sql.DB) *UserRepository {
+	return &UserRepository{
+		db: db,
+	}
+}
+
+func NewAddUserRepo(Id int, First_name string, Last_name string, Age int, Status string) *models.AddUser {
 	return &models.AddUser{
 		Id:        Id,
 		FirstName: First_name,
@@ -31,27 +40,21 @@ func NewListUser(Id int, Last_name string) *models.ListUser {
 	}
 }
 
-func NewPostgresDb() (*sql.DB, error) {
-	db, err := sql.Open("postgres", config.ConnStr)
+func (repo *UserRepository) CreateUser(a models.User) error {
+	// Query для запросов, которые что-то возвращает
+	// Exec для запросов, которые ничего не возвращают
+
+	_, err := repo.db.Exec("insert into test (id, first_name, last_name, age, status) values ($1,$2,$3,$4,$5)",
+		a.ID, a.FirstName, a.LastName, a.Age, a.Status,
+	)
 	if err != nil {
-		return nil, err
+		return err
 	}
-	err = db.Ping()
-	if err != nil {
-		return nil, err
-	}
-	return db, err
+
+	return nil
 }
 
-func CreateUser(a *models.AddUser, s *sql.DB) {
-	result, err := s.Query("insert into test (id, first_name, last_name, age, status) values ($1,$2,$3,$4,$5)", a.Id, a.FirstName, a.LastName, a.Age, a.Status)
-	if err != nil {
-		panic(err)
-	}
-	defer result.Close()
-}
-
-func ListUser(l *models.ListUser, s *sql.DB) (int, string) {
+func (r *UserRepository) ListUser(l *models.ListUser) (int, string) {
 	rows, err := s.Query("SELECT id, last_name FROM test ORDER BY id ASC")
 	if err != nil {
 		panic(err)
@@ -71,3 +74,6 @@ func ListUser(l *models.ListUser, s *sql.DB) (int, string) {
 	}
 	return l.Id, l.LastName
 }
+
+// пишешь в телеге id, тебе выводятся в ТЕЛЕГЕ все данные по этому пользователю
+// GetByID(id int)
