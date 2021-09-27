@@ -2,8 +2,8 @@ package repositories
 
 import (
 	"database/sql"
-	"fmt"
 	"homework/internal/app/models"
+	"log"
 
 	_ "github.com/lib/pq"
 )
@@ -23,9 +23,9 @@ func NewUserRepository(db *sql.DB) *UserRepository {
 	}
 }
 
-func NewAddUserRepo(Id int, First_name string, Last_name string, Age int, Status string) *models.AddUser {
-	return &models.AddUser{
-		Id:        Id,
+func NewAddUserRepo(Id int, First_name string, Last_name string, Age int, Status string) *models.User {
+	return &models.User{
+		ID:        Id,
 		FirstName: First_name,
 		LastName:  Last_name,
 		Age:       Age,
@@ -33,9 +33,9 @@ func NewAddUserRepo(Id int, First_name string, Last_name string, Age int, Status
 	}
 }
 
-func NewListUser(Id int, Last_name string) *models.ListUser {
-	return &models.ListUser{
-		Id:       Id,
+func NewListUser(Id int, Last_name string) *models.User {
+	return &models.User{
+		ID:       Id,
 		LastName: Last_name,
 	}
 }
@@ -43,7 +43,6 @@ func NewListUser(Id int, Last_name string) *models.ListUser {
 func (repo *UserRepository) CreateUser(a models.User) error {
 	// Query для запросов, которые что-то возвращает
 	// Exec для запросов, которые ничего не возвращают
-
 	_, err := repo.db.Exec("insert into test (id, first_name, last_name, age, status) values ($1,$2,$3,$4,$5)",
 		a.ID, a.FirstName, a.LastName, a.Age, a.Status,
 	)
@@ -54,25 +53,34 @@ func (repo *UserRepository) CreateUser(a models.User) error {
 	return nil
 }
 
-func (r *UserRepository) ListUser(l *models.ListUser) (int, string) {
-	rows, err := s.Query("SELECT id, last_name FROM test ORDER BY id ASC")
+func (r *UserRepository) ListUser(m *models.User) (int, string) {
+	rows, err := r.db.Query("SELECT id, last_name FROM test ORDER BY id ASC")
 	if err != nil {
-		panic(err)
+		log.Fatalf("ERROR %s", err)
 	}
-	sendUsers := []models.ListUser{}
+	sendUsers := []models.User{}
 	for rows.Next() {
-		err := rows.Scan(&l.Id, &l.LastName)
+		err := rows.Scan(&m.ID, &m.LastName)
 		if err != nil {
-			fmt.Println(err)
+			log.Fatalf("ERROR %s", err)
 			continue
 		}
-		sendUsers = append(sendUsers, *l)
+		sendUsers = append(sendUsers, *m)
 	}
 
-	for _, l := range sendUsers {
-		fmt.Println(l.Id, l.LastName)
+	for _, m := range sendUsers {
+		return m.ID, m.LastName
 	}
-	return l.Id, l.LastName
+	return m.ID, m.LastName
+}
+
+func (r *UserRepository) FindById(ID int) (*models.User, error) {
+	u := &models.User{}
+	if err := r.db.QueryRow("SELECT first_name, last_name FROM test WHERE id=1$",
+		ID).Scan(u.ID, u.LastName); err != nil {
+		return nil, err
+	}
+	return u, nil
 }
 
 // пишешь в телеге id, тебе выводятся в ТЕЛЕГЕ все данные по этому пользователю

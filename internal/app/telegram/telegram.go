@@ -1,9 +1,10 @@
 package telegram
-<<<<<<< task2
 
 import (
+	"fmt"
 	"homework/internal/app/repositories"
 	"log"
+	"strconv"
 
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api"
 )
@@ -38,7 +39,10 @@ func (b *Bot) handleUpdates(updates tgbotapi.UpdatesChannel) {
 			b.handleCommand(update.Message)
 			continue
 		}
-
+		if i, err := strconv.Atoi(fmt.Sprint(update.Message)); err == nil {
+			b.repositories.FindById(i)
+			continue
+		}
 		b.handleMessage(update.Message)
 	}
 }

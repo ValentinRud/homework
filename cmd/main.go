@@ -4,10 +4,8 @@ import (
 	"database/sql"
 	"fmt"
 	"homework/config"
-	"homework/internal/app/gateways"
 	"homework/internal/app/models"
 	"homework/internal/app/repositories"
-	"homework/internal/app/services"
 	"homework/internal/app/telegram"
 	"log"
 
@@ -22,7 +20,7 @@ func main() {
 	}
 	bot.Debug = true
 
-	telegramBot := telegram.NewBot(bot)
+	telegramBot := telegram.NewBot(bot, repositories.NewUserRepository(&sql.DB{}))
 	if err := telegramBot.Start(); err != nil {
 		log.Fatalf("ERROR %s", err)
 	}
@@ -39,11 +37,12 @@ func main() {
 	// firstName := u.GetFirstName()
 	// // чтение из json
 
-	userRepo := repositories.NewUserRepository(db)
+	userRepo := repositories.NewUserRepository(&db)
 	err = userRepo.CreateUser(u)
 	if err != nil {
 		log.Fatalf("ERROR CREATING USER %s", err)
 	}
+}
 
 // 	AddUser := repositories.NewAddUser(gateways.GetJson(&models.AddUser{}))
 // 	repositories.CreateUser(AddUser, db)
@@ -53,15 +52,14 @@ func main() {
 // 	telegram.Telegram()
 // }
 
-func initDb() (*sql.DB, error) {
+func initDb() (sql.DB, error) {
 	db, err := sql.Open("postgres", config.ConnStr)
 	if err != nil {
-		return nil, err
+		log.Fatalf("ERROR CREATING USER %s", err)
 	}
 	err = db.Ping()
 	if err != nil {
-		return nil, err
+		log.Fatalf("ERROR CREATING USER %s", err)
 	}
-
-	return db, err
+	return *db, err
 }
