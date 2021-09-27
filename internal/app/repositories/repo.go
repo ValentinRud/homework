@@ -85,3 +85,11 @@ func (r *UserRepository) FindById(ID int) (*models.User, error) {
 
 // пишешь в телеге id, тебе выводятся в ТЕЛЕГЕ все данные по этому пользователю
 // GetByID(id int)
+
+// 	AddUser := repositories.NewAddUser(gateways.GetJson(&models.AddUser{}))
+// 	repositories.CreateUser(AddUser, db)
+// 	ListUser := repositories.NewListUser(repositories.ListUser(&models.ListUser{}, db))
+// 	fmt.Println(ListUser)
+// 	fmt.Println(services.New(gateways.GetJson(&models.AddUser{})))
+// 	telegram.Telegram()
+// }

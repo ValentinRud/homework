@@ -3,7 +3,6 @@ package telegram
 import (
 	"fmt"
 	"homework/internal/app/gateways"
-	"homework/internal/app/repositories"
 	"log"
 
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api"
@@ -32,7 +31,7 @@ func (b *Bot) handleCommand(message *tgbotapi.Message) error {
 		_, err := b.bot.Send(msg)
 		return err
 	case commandList:
-		msg.Text = fmt.Sprint(repositories.NewListUser(gateways.GetJson().ID, gateways.GetJson().LastName))
+		msg.Text = fmt.Sprint(gateways.GetJson().ID, gateways.GetJson().FirstName)
 		_, err := b.bot.Send(msg)
 		return err
 	default:

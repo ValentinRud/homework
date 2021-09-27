@@ -14,6 +14,13 @@ import (
 )
 
 func main() {
+
+	db, err := initDb()
+	fmt.Println("connect postgre")
+	if err != nil {
+		log.Fatalf("ERROR %s", err)
+	}
+
 	bot, err := tgbotapi.NewBotAPI(config.TeleToken)
 	if err != nil {
 		log.Fatalf("ERROR %s", err)
@@ -25,32 +32,20 @@ func main() {
 		log.Fatalf("ERROR %s", err)
 	}
 
-	db, err := initDb()
-	fmt.Println("connect postgre")
-	if err != nil {
-		log.Fatalf("ERROR %s", err)
-	}
-
 	var u models.User
-
-	// u.SetName("name", "surname")
-	// firstName := u.GetFirstName()
-	// // чтение из json
 
 	userRepo := repositories.NewUserRepository(&db)
 	err = userRepo.CreateUser(u)
 	if err != nil {
 		log.Fatalf("ERROR CREATING USER %s", err)
 	}
-}
 
-// 	AddUser := repositories.NewAddUser(gateways.GetJson(&models.AddUser{}))
-// 	repositories.CreateUser(AddUser, db)
-// 	ListUser := repositories.NewListUser(repositories.ListUser(&models.ListUser{}, db))
-// 	fmt.Println(ListUser)
-// 	fmt.Println(services.New(gateways.GetJson(&models.AddUser{})))
-// 	telegram.Telegram()
-// }
+	a, err := userRepo.FindById(5)
+	if err != nil {
+		log.Fatalf("ERROR %s", err)
+	}
+	fmt.Println(a)
+}
 
 func initDb() (sql.DB, error) {
 	db, err := sql.Open("postgres", config.ConnStr)
@@ -63,3 +58,7 @@ func initDb() (sql.DB, error) {
 	}
 	return *db, err
 }
+
+// u.SetName("name", "surname")
+// firstName := u.GetFirstName()
+// // чтение из json
