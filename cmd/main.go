@@ -4,7 +4,6 @@ import (
 	"database/sql"
 	"fmt"
 	"homework/config"
-	"homework/internal/app/models"
 	"homework/internal/app/repositories"
 	"homework/internal/app/telegram"
 	"log"
@@ -21,33 +20,38 @@ func main() {
 		log.Fatalf("ERROR %s", err)
 	}
 
+	Repo := repositories.NewUserRepository(db)
+
 	bot, err := tgbotapi.NewBotAPI(config.TeleToken)
 	if err != nil {
 		log.Fatalf("ERROR %s", err)
 	}
 	bot.Debug = true
 
-	telegramBot := telegram.NewBot(bot, repositories.NewUserRepository(&sql.DB{}))
+	telegramBot := telegram.NewBot(bot, Repo)
+
+	// go func() {
 	if err := telegramBot.Start(); err != nil {
 		log.Fatalf("ERROR %s", err)
 	}
+	// }()
 
-	var u models.User
+	// var u models.User
 
-	userRepo := repositories.NewUserRepository(&db)
-	err = userRepo.CreateUser(u)
-	if err != nil {
-		log.Fatalf("ERROR CREATING USER %s", err)
-	}
-
-	a, err := userRepo.FindById(5)
-	if err != nil {
-		log.Fatalf("ERROR %s", err)
-	}
-	fmt.Println(a)
+	// err = Repo.CreateUser(u)
+	// if err != nil {
+	// 	log.Fatalf("ERROR CREATING USER %s", err)
+	// }
 }
 
-func initDb() (sql.DB, error) {
+// 	a, err := userRepo.FindById(5)
+// 	if err != nil {
+// 		log.Fatalf("ERROR %s", err)
+// 	}
+// 	fmt.Println(a)
+// }
+
+func initDb() (*sql.DB, error) {
 	db, err := sql.Open("postgres", config.ConnStr)
 	if err != nil {
 		log.Fatalf("ERROR CREATING USER %s", err)
@@ -56,7 +60,7 @@ func initDb() (sql.DB, error) {
 	if err != nil {
 		log.Fatalf("ERROR CREATING USER %s", err)
 	}
-	return *db, err
+	return db, err
 }
 
 // u.SetName("name", "surname")

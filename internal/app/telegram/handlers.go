@@ -2,7 +2,7 @@ package telegram
 
 import (
 	"fmt"
-	"homework/internal/app/gateways"
+	"homework/internal/app/models"
 	"log"
 
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api"
@@ -11,6 +11,7 @@ import (
 const (
 	commandStart = "start"
 	commandList  = "list"
+	// commandListUser = "list/{id:[0-9]+}"
 )
 
 func (b *Bot) handleMessage(message *tgbotapi.Message) {
@@ -31,12 +32,15 @@ func (b *Bot) handleCommand(message *tgbotapi.Message) error {
 		_, err := b.bot.Send(msg)
 		return err
 	case commandList:
-		msg.Text = fmt.Sprint(gateways.GetJson().ID, gateways.GetJson().FirstName)
+		msg.Text = fmt.Sprint(b.repositories.ListUsers(models.User{}))
 		_, err := b.bot.Send(msg)
 		return err
+	// case commandListUser:
+	// 	msg.Text = fmt.Sprint(b.repositories.FindById(5))
+	// 	_, err := b.bot.Send(msg)
+	// 	return err
 	default:
 		_, err := b.bot.Send(msg)
 		return err
-
 	}
 }

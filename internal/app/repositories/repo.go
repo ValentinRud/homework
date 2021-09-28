@@ -2,20 +2,25 @@ package repositories
 
 import (
 	"database/sql"
+	"fmt"
 	"homework/internal/app/models"
 	"log"
 
 	_ "github.com/lib/pq"
 )
 
-//type Repository interface {
-//	CreateUser()
-//	ListUser()
-//}
+type Repository interface {
+	CreateUser(models.User) error
+	ListUser(Id int) (string, error)
+}
 
 type UserRepository struct {
 	db *sql.DB
 }
+
+// func (r *UserRepository) CreateUser(models.User) error
+
+// func (r *UserRepository) ListUser(Id int) (string,error)
 
 func NewUserRepository(db *sql.DB) *UserRepository {
 	return &UserRepository{
@@ -40,10 +45,10 @@ func NewListUser(Id int, Last_name string) *models.User {
 	}
 }
 
-func (repo *UserRepository) CreateUser(a models.User) error {
+func (r *UserRepository) CreateUser(a models.User) error {
 	// Query для запросов, которые что-то возвращает
 	// Exec для запросов, которые ничего не возвращают
-	_, err := repo.db.Exec("insert into test (id, first_name, last_name, age, status) values ($1,$2,$3,$4,$5)",
+	_, err := r.db.Exec("insert into test (id, first_name, last_name, age, status) values ($1,$2,$3,$4,$5)",
 		a.ID, a.FirstName, a.LastName, a.Age, a.Status,
 	)
 	if err != nil {
@@ -53,26 +58,47 @@ func (repo *UserRepository) CreateUser(a models.User) error {
 	return nil
 }
 
-func (r *UserRepository) ListUser(m *models.User) (int, string) {
+func (r *UserRepository) ListUsers(m models.User) string {
 	rows, err := r.db.Query("SELECT id, last_name FROM test ORDER BY id ASC")
 	if err != nil {
 		log.Fatalf("ERROR %s", err)
 	}
 	sendUsers := []models.User{}
 	for rows.Next() {
-		err := rows.Scan(&m.ID, &m.LastName)
+		err := rows.Scan(m.ID, m.LastName)
 		if err != nil {
 			log.Fatalf("ERROR %s", err)
 			continue
 		}
-		sendUsers = append(sendUsers, *m)
+		sendUsers = append(sendUsers, m)
 	}
 
 	for _, m := range sendUsers {
-		return m.ID, m.LastName
+		return fmt.Sprint(m)
 	}
-	return m.ID, m.LastName
+	return fmt.Sprint(m)
 }
+
+// func (r *UserRepository) ListUser(m *models.User) (int, string) {
+// 	rows, err := r.db.Query("SELECT id, last_name FROM test ORDER BY id ASC")
+// 	if err != nil {
+// 		log.Fatalf("ERROR %s", err)
+// 	}
+// 	sendUsers := []models.User{}
+// 	for rows.Next() {
+// 		err := rows.Scan(&m.ID, &m.LastName)
+// 		if err != nil {
+// 			log.Fatalf("ERROR %s", err)
+// 			continue
+// 		}
+// 		sendUsers = append(sendUsers, *m)
+// 	}
+
+// 	for _, m := range sendUsers {
+// 		return m.ID, m.LastName
+// 	}
+// 	return m.ID, m.LastName
+// }
 
 func (r *UserRepository) FindById(ID int) (*models.User, error) {
 	u := &models.User{}
