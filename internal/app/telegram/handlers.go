@@ -44,3 +44,14 @@ func (b *Bot) handleCommand(message *tgbotapi.Message) error {
 		return err
 	}
 }
+
+// func (b *Bot) UnmarshalBody(message *tgbotapi.Message) bool {
+
+// 	type botText models.BotMessage
+
+// 	if err := json.Unmarshal([]byte(), &botText);
+// 	err != nil {
+// 		return false
+// 	}
+// 	return true
+// }
