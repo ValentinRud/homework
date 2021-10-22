@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 	"homework/config"
+	"homework/internal/app/api"
 	"homework/internal/app/repositories"
 	"homework/internal/app/telegram"
 	"log"
@@ -13,7 +14,6 @@ import (
 )
 
 func main() {
-
 	db, err := initDb()
 	fmt.Println("connect postgre")
 	if err != nil {
@@ -22,13 +22,17 @@ func main() {
 
 	Repo := repositories.NewUserRepository(db)
 
+	Api := api.NewClientApi()
+	// futuresClient := binance.NewFuturesClient(apiKey, secretKey)   // USDT-M Futures
+	// deliveryClient := binance.NewDeliveryClient(apiKey, secretKey) // Coin-M Futures
+
 	bot, err := tgbotapi.NewBotAPI(config.TeleToken)
 	if err != nil {
 		log.Fatalf("ERROR %s", err)
 	}
 	bot.Debug = true
 
-	telegramBot := telegram.NewBot(bot, Repo)
+	telegramBot := telegram.NewBot(bot, Repo, Api)
 
 	// go func() {
 	if err := telegramBot.Start(); err != nil {

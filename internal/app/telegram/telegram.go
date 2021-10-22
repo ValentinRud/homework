@@ -2,6 +2,7 @@ package telegram
 
 import (
 	"fmt"
+	"homework/internal/app/api"
 	"homework/internal/app/repositories"
 	"log"
 	"strconv"
@@ -12,10 +13,11 @@ import (
 type Bot struct {
 	bot          *tgbotapi.BotAPI
 	repositories *repositories.UserRepository
+	bibaceClient *api.ClientApi
 }
 
-func NewBot(bot *tgbotapi.BotAPI, repositories *repositories.UserRepository) *Bot {
-	return &Bot{bot: bot, repositories: repositories}
+func NewBot(bot *tgbotapi.BotAPI, repositories *repositories.UserRepository, bibaceClient *api.ClientApi) *Bot {
+	return &Bot{bot: bot, repositories: repositories, bibaceClient: bibaceClient}
 }
 
 func (b *Bot) Start() error {

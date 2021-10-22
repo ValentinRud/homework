@@ -1,16 +1,17 @@
 package telegram
 
 import (
+	"encoding/json"
 	"fmt"
-	"homework/internal/app/models"
 	"log"
 
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api"
 )
 
 const (
-	commandStart = "start"
-	commandList  = "list"
+	commandStart  = "start"
+	commandList   = "list"
+	commandOrders = "orders"
 	// commandListUser = "list/{id:[0-9]+}"
 )
 
@@ -31,12 +32,28 @@ func (b *Bot) handleCommand(message *tgbotapi.Message) error {
 		msg.Text = "Ты ввел комманду СТАРТ"
 		_, err := b.bot.Send(msg)
 		return err
+	case commandOrders:
+		orders := b.bibaceClient.ListTicket()
+		bytes, err := json.Marshal(orders)
+		if err != nil {
+			log.Fatalf("ERROR %s", err)
+		}
+		fmt.Println(string(bytes))
+		msg.Text = string(bytes)
+		_, err = b.bot.Send(msg)
+		return err
 	case commandList:
-		msg.Text = fmt.Sprint(b.repositories.ListUsers(models.User{}))
-		_, err := b.bot.Send(msg)
+		list := b.repositories.ListUser()
+		bytes, err := json.Marshal(list)
+		if err != nil {
+			log.Fatalf("ERROR %s", err)
+		}
+
+		msg.Text = string(bytes)
+		_, err = b.bot.Send(msg)
 		return err
 	// case commandListUser:
-	// 	msg.Text = fmt.Sprint(b.repositories.FindById(5))
+	// 	msg.Text = fmt.Sprint(b.repositories.FindById())
 	// 	_, err := b.bot.Send(msg)
 	// 	return err
 	default:
@@ -47,10 +64,9 @@ func (b *Bot) handleCommand(message *tgbotapi.Message) error {
 
 // func (b *Bot) UnmarshalBody(message *tgbotapi.Message) bool {
 
-// 	type botText models.BotMessage
+// 	type botText models.User
 
-// 	if err := json.Unmarshal([]byte(), &botText);
-// 	err != nil {
+// 	if err := json.Unmarshal([]byte(message.Text), &botText); err != nil {
 // 		return false
 // 	}
 // 	return true

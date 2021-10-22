@@ -2,7 +2,6 @@ package repositories
 
 import (
 	"database/sql"
-	"fmt"
 	"homework/internal/app/models"
 	"log"
 
@@ -58,28 +57,7 @@ func (r *UserRepository) CreateUser(a models.User) error {
 	return nil
 }
 
-func (r *UserRepository) ListUsers(m models.User) string {
-	rows, err := r.db.Query("SELECT id, last_name FROM test ORDER BY id ASC")
-	if err != nil {
-		log.Fatalf("ERROR %s", err)
-	}
-	sendUsers := []models.User{}
-	for rows.Next() {
-		err := rows.Scan(m.ID, m.LastName)
-		if err != nil {
-			log.Fatalf("ERROR %s", err)
-			continue
-		}
-		sendUsers = append(sendUsers, m)
-	}
-
-	for _, m := range sendUsers {
-		return fmt.Sprint(m)
-	}
-	return fmt.Sprint(m)
-}
-
-// func (r *UserRepository) ListUser(m *models.User) (int, string) {
+// func (r *UserRepository) ListUsers(m *models.User) models.User {
 // 	rows, err := r.db.Query("SELECT id, last_name FROM test ORDER BY id ASC")
 // 	if err != nil {
 // 		log.Fatalf("ERROR %s", err)
@@ -95,19 +73,44 @@ func (r *UserRepository) ListUsers(m models.User) string {
 // 	}
 
 // 	for _, m := range sendUsers {
-// 		return m.ID, m.LastName
+// 		return m
 // 	}
-// 	return m.ID, m.LastName
+// 	return models.User{}
 // }
+// выводить по пять, break
+func (r *UserRepository) ListUser() []models.User {
+	var m models.User
+	rows, err := r.db.Query("SELECT id, last_name FROM test limit 5")
+	if err != nil {
+		log.Fatalf("ERROR %s", err)
+	}
+	sendUsers := []models.User{}
+	for rows.Next() {
+		err := rows.Scan(&m.ID, &m.LastName)
+		if err != nil {
+			log.Fatalf("ERROR %s", err)
+			continue
+		}
+		sendUsers = append(sendUsers, m)
+	}
+	return sendUsers
+}
 
-func (r *UserRepository) FindById(ID int) (*models.User, error) {
+func (r *UserRepository) FindById(id int) (*models.User, error) {
 	u := &models.User{}
 	if err := r.db.QueryRow("SELECT first_name, last_name FROM test WHERE id=1$",
-		ID).Scan(u.ID, u.LastName); err != nil {
+		id).Scan(u.ID, u.LastName); err != nil {
 		return nil, err
 	}
 	return u, nil
 }
+
+// func (r *UserRepository) GetByID(id int) {
+// 	row, err := r.db.Query("SELECT id, last_name FROM test Where id=1$", id)
+// 	if err != nil {
+// 		log.Fatalf("ERROR %s", err)
+// 	}
+// }
 
 // пишешь в телеге id, тебе выводятся в ТЕЛЕГЕ все данные по этому пользователю
 // GetByID(id int)
