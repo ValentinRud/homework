@@ -35,22 +35,25 @@ func (b *Bot) handleCommand(message *tgbotapi.Message) error {
 		msg.Text = "Ты ввел комманду СТАРТ"
 		_, err := b.bot.Send(msg)
 		return err
+
 	case commandPrices:
 		orders := b.bibaceClient.ListTicket()
 		for _, price := range orders {
 			b.repositories.CreatePrice(*price)
 		}
+
 		bytes, err := json.Marshal(orders)
 		if err != nil {
 			log.Fatalf("ERROR %s", err)
 		}
+
 		fmt.Println(string(bytes))
 		msg.Text = string(bytes)
 		_, err = b.bot.Send(msg)
 		return err
+
 	case commandList:
 		list := b.repositories.ListSymbol()
-
 		for i := 0; i < len(list); i += limit {
 			minValue := 0
 
@@ -68,7 +71,6 @@ func (b *Bot) handleCommand(message *tgbotapi.Message) error {
 
 			msg.Text = string(bytes)
 			_, err = b.bot.Send(msg)
-
 		}
 		return err
 	// case commandListUser:
