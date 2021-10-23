@@ -5,6 +5,7 @@ import (
 	"homework/internal/app/models"
 	"log"
 
+	"github.com/adshao/go-binance/v2"
 	_ "github.com/lib/pq"
 )
 
@@ -44,11 +45,11 @@ func NewListUser(Id int, Last_name string) *models.User {
 	}
 }
 
-func (r *UserRepository) CreateUser(a models.User) error {
+func (r *UserRepository) CreatePrice(a binance.SymbolPrice) error {
 	// Query для запросов, которые что-то возвращает
 	// Exec для запросов, которые ничего не возвращают
-	_, err := r.db.Exec("insert into test (id, first_name, last_name, age, status) values ($1,$2,$3,$4,$5)",
-		a.ID, a.FirstName, a.LastName, a.Age, a.Status,
+	_, err := r.db.Exec("insert into SymbolPrice(symbol, price) values ($1,$2)",
+		a.Symbol, a.Price,
 	)
 	if err != nil {
 		return err
@@ -78,15 +79,15 @@ func (r *UserRepository) CreateUser(a models.User) error {
 // 	return models.User{}
 // }
 // выводить по пять, break
-func (r *UserRepository) ListUser() []models.User {
-	var m models.User
-	rows, err := r.db.Query("SELECT id, last_name FROM test limit 5")
+func (r *UserRepository) ListSymbol() []binance.SymbolPrice {
+	var m binance.SymbolPrice
+	rows, err := r.db.Query("SELECT * FROM SymbolPrice ORDER BY symbol")
 	if err != nil {
 		log.Fatalf("ERROR %s", err)
 	}
-	sendUsers := []models.User{}
+	sendUsers := []binance.SymbolPrice{}
 	for rows.Next() {
-		err := rows.Scan(&m.ID, &m.LastName)
+		err := rows.Scan(&m.Symbol, &m.Price)
 		if err != nil {
 			log.Fatalf("ERROR %s", err)
 			continue
