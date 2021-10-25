@@ -11,7 +11,7 @@ import (
 const (
 	commandStart  = "start"
 	commandList   = "list"
-	commandprices = "orders"
+	commandOrders = "orders"
 	commandPrices = "prices"
 	// commandListUser = "list/{id:[0-9]+}"
 )
@@ -72,6 +72,7 @@ func (b *Bot) handleCommand(message *tgbotapi.Message) error {
 			msg.Text = string(bytes)
 			_, err = b.bot.Send(msg)
 		}
+		//	case commandOrders:
 		return err
 	// case commandListUser:
 	// 	msg.Text = fmt.Sprint(b.repositories.FindById())

@@ -26,7 +26,7 @@ func NewClientApi() *ClientApi {
 }
 
 func (c *ClientApi) ListOrders() []*binance.Order {
-	orders, err := c.client.NewListOrdersService().Symbol("BNBETH").
+	orders, err := c.client.NewListOrdersService().Symbol("DTCUSDT").
 		Do(context.Background())
 	if err != nil {
 		fmt.Println(err)

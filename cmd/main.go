@@ -8,9 +8,16 @@ import (
 	"homework/internal/app/repositories"
 	"homework/internal/app/telegram"
 	"log"
+	"os"
 
+	"github.com/adshao/go-binance/v2"
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api"
 	_ "github.com/lib/pq"
+)
+
+var (
+	apiKey    = os.Getenv("APIKEY")
+	secretKey = os.Getenv("SECRETKEY")
 )
 
 func main() {
@@ -20,10 +27,10 @@ func main() {
 		log.Fatalf("ERROR %s", err)
 	}
 
-	Repo := repositories.NewUserRepository(db)
+	Repo := repositories.NewSymbolRepository(db)
 
 	Api := api.NewClientApi()
-	// futuresClient := binance.NewFuturesClient(apiKey, secretKey)   // USDT-M Futures
+	futuresClient := binance.NewFuturesClient(apiKey, secretKey) // USDT-M Futures
 	// deliveryClient := binance.NewDeliveryClient(apiKey, secretKey) // Coin-M Futures
 
 	bot, err := tgbotapi.NewBotAPI(config.TeleToken)
@@ -33,40 +40,20 @@ func main() {
 	bot.Debug = true
 
 	telegramBot := telegram.NewBot(bot, Repo, Api)
-
-	// go func() {
 	if err := telegramBot.Start(); err != nil {
 		log.Fatalf("ERROR %s", err)
 	}
-	// }()
 
-	// var u models.User
-
-	// err = Repo.CreateUser(u)
-	// if err != nil {
-	// 	log.Fatalf("ERROR CREATING USER %s", err)
-	// }
 }
-
-// 	a, err := userRepo.FindById(5)
-// 	if err != nil {
-// 		log.Fatalf("ERROR %s", err)
-// 	}
-// 	fmt.Println(a)
-// }
 
 func initDb() (*sql.DB, error) {
 	db, err := sql.Open("postgres", config.ConnStr)
 	if err != nil {
-		log.Fatalf("ERROR CREATING USER %s", err)
+		log.Fatalf("ERROR CREATING RECORD %s", err)
 	}
 	err = db.Ping()
 	if err != nil {
-		log.Fatalf("ERROR CREATING USER %s", err)
+		log.Fatalf("ERROR CREATING RECORD %s", err)
 	}
 	return db, err
 }
-
-// u.SetName("name", "surname")
-// firstName := u.GetFirstName()
-// // чтение из json

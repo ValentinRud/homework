@@ -1,22 +1,20 @@
 package telegram
 
 import (
-	"fmt"
 	"homework/internal/app/api"
 	"homework/internal/app/repositories"
 	"log"
-	"strconv"
 
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api"
 )
 
 type Bot struct {
 	bot          *tgbotapi.BotAPI
-	repositories *repositories.UserRepository
+	repositories *repositories.SymbolRepository
 	bibaceClient *api.ClientApi
 }
 
-func NewBot(bot *tgbotapi.BotAPI, repositories *repositories.UserRepository, bibaceClient *api.ClientApi) *Bot {
+func NewBot(bot *tgbotapi.BotAPI, repositories *repositories.SymbolRepository, bibaceClient *api.ClientApi) *Bot {
 	return &Bot{bot: bot, repositories: repositories, bibaceClient: bibaceClient}
 }
 
@@ -39,10 +37,6 @@ func (b *Bot) handleUpdates(updates tgbotapi.UpdatesChannel) {
 		}
 		if update.Message.IsCommand() {
 			b.handleCommand(update.Message)
-			continue
-		}
-		if i, err := strconv.Atoi(fmt.Sprint(update.Message)); err == nil {
-			b.repositories.FindById(i)
 			continue
 		}
 		b.handleMessage(update.Message)
