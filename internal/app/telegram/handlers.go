@@ -37,7 +37,7 @@ func (b *Bot) handleCommand(message *tgbotapi.Message) error {
 		return err
 
 	case commandPrices:
-		orders := b.bibaceClient.ListTicket()
+		orders := b.binanceClient.ListTicket()
 		for _, price := range orders {
 			b.repositories.CreatePrice(*price)
 		}
@@ -72,7 +72,27 @@ func (b *Bot) handleCommand(message *tgbotapi.Message) error {
 			msg.Text = string(bytes)
 			_, err = b.bot.Send(msg)
 		}
-		//	case commandOrders:
+		return err
+	case commandOrders:
+		list := b.binanceClient.ListOrders()
+		for i := 0; i < len(list); i += limit {
+			minValue := 0
+
+			if i+limit <= len(list) {
+				minValue = i + limit
+			} else {
+				minValue = len(list)
+			}
+
+			batch := list[i:minValue]
+			bytes, err := json.Marshal(batch)
+			if err != nil {
+				log.Fatalf("ERROR %s", err)
+			}
+
+			msg.Text = string(bytes)
+			_, err = b.bot.Send(msg)
+		}
 		return err
 	// case commandListUser:
 	// 	msg.Text = fmt.Sprint(b.repositories.FindById())

@@ -9,13 +9,13 @@ import (
 )
 
 type Bot struct {
-	bot          *tgbotapi.BotAPI
-	repositories *repositories.SymbolRepository
-	bibaceClient *api.ClientApi
+	bot           *tgbotapi.BotAPI
+	repositories  *repositories.SymbolRepository
+	binanceClient *api.ClientApi
 }
 
-func NewBot(bot *tgbotapi.BotAPI, repositories *repositories.SymbolRepository, bibaceClient *api.ClientApi) *Bot {
-	return &Bot{bot: bot, repositories: repositories, bibaceClient: bibaceClient}
+func NewBot(bot *tgbotapi.BotAPI, repositories *repositories.SymbolRepository, binanceClient *api.ClientApi) *Bot {
+	return &Bot{bot: bot, repositories: repositories, binanceClient: binanceClient}
 }
 
 func (b *Bot) Start() error {

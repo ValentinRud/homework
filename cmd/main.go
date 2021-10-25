@@ -8,16 +8,14 @@ import (
 	"homework/internal/app/repositories"
 	"homework/internal/app/telegram"
 	"log"
-	"os"
 
-	"github.com/adshao/go-binance/v2"
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api"
 	_ "github.com/lib/pq"
 )
 
 var (
-	apiKey    = os.Getenv("APIKEY")
-	secretKey = os.Getenv("SECRETKEY")
+	apiKey    =  //os.Getenv("APIKEY")
+	secretKey =  //os.Getenv("SECRETKEY")
 )
 
 func main() {
@@ -29,8 +27,8 @@ func main() {
 
 	Repo := repositories.NewSymbolRepository(db)
 
-	Api := api.NewClientApi()
-	futuresClient := binance.NewFuturesClient(apiKey, secretKey) // USDT-M Futures
+	Api := api.NewClientApi(apiKey, secretKey)
+	// futuresClient := binance.NewFuturesClient(apiKey, secretKey) // USDT-M Futures
 	// deliveryClient := binance.NewDeliveryClient(apiKey, secretKey) // Coin-M Futures
 
 	bot, err := tgbotapi.NewBotAPI(config.TeleToken)
