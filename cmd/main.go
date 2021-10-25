@@ -14,8 +14,8 @@ import (
 )
 
 var (
-	apiKey    =  //os.Getenv("APIKEY")
-	secretKey =  //os.Getenv("SECRETKEY")
+	apiKey    = "qdAOdQVLhdJAiDuZFJETN0Nv8C5yFfycGePV8qw7oaPh5GyxIAf3qQVrOLO4EbHK" //os.Getenv("APIKEY")
+	secretKey = "vht9WH2eSqACWiJa5xt5lojW03vLhGqEntetujbGCJCRb3mBoOLg9VIgDlfFrFSn" //os.Getenv("SECRETKEY")
 )
 
 func main() {

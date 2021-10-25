@@ -27,13 +27,20 @@ func NewClientApi(apiKey string, secretKey string) *ClientApi {
 }
 
 func (c *ClientApi) ListOrders() []*futures.Order {
-	orders, err := c.futuresClient.NewListOrdersService().Symbol("SCUSDT").
-		Do(context.Background())
+
+	/*xxx, err := c.client.NewListOrdersService().Symbol("IOTAUSDT").Do(context.Background())
+	yyy, err := c.deliveryClient.NewListOrdersService().Symbol("IOTAUSDT").Do(context.Background())
+
+	fmt.Sprintln(xxx)
+	fmt.Sprintln(yyy)*/
+
+	orders, err := c.futuresClient.NewListOrdersService(). /*Symbol("IOTAUSDT").*/
+								Do(context.Background())
 	if err != nil {
 		fmt.Println(err)
-		return orders
+		return nil
 	}
-	return nil
+	return orders
 }
 
 func (c *ClientApi) ListTicket() []*binance.SymbolPrice {

@@ -2,17 +2,17 @@ package telegram
 
 import (
 	"encoding/json"
-	"fmt"
 	"log"
 
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api"
 )
 
 const (
-	commandStart  = "start"
-	commandList   = "list"
-	commandOrders = "orders"
-	commandPrices = "prices"
+	commandStart     = "start"
+	commandList      = "list"
+	commandOrders    = "orders"
+	commandPrices    = "prices"
+	commandSyncOrder = "syncorder"
 	// commandListUser = "list/{id:[0-9]+}"
 )
 
@@ -42,17 +42,12 @@ func (b *Bot) handleCommand(message *tgbotapi.Message) error {
 			b.repositories.CreatePrice(*price)
 		}
 
-		bytes, err := json.Marshal(orders)
-		if err != nil {
-			log.Fatalf("ERROR %s", err)
-		}
-
-		fmt.Println(string(bytes))
-		msg.Text = string(bytes)
+		msg.Text = "Курсы валют записаны в БД"
 		_, err = b.bot.Send(msg)
 		return err
 
 	case commandList:
+
 		list := b.repositories.ListSymbol()
 		for i := 0; i < len(list); i += limit {
 			minValue := 0
@@ -73,6 +68,17 @@ func (b *Bot) handleCommand(message *tgbotapi.Message) error {
 			_, err = b.bot.Send(msg)
 		}
 		return err
+
+	case commandSyncOrder:
+		orders := b.binanceClient.ListOrders()
+		for _, price := range orders {
+			b.repositories.CreateOrder(*price)
+		}
+
+		msg.Text = "Ордера записаны в БД"
+		_, err = b.bot.Send(msg)
+		return err
+
 	case commandOrders:
 		list := b.binanceClient.ListOrders()
 		for i := 0; i < len(list); i += limit {
